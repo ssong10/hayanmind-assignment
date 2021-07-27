@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { fetchComments } from '../utils/api';
 import Comment from './comment'
+import { throttled, debounced } from '../utils/delay'
 
 const InfiniteScrollList = () => {
   const [page, setPage] = useState(1);
@@ -14,7 +15,7 @@ const InfiniteScrollList = () => {
       scrollHeight,
       scrollTop,
       clientHeight
-    } = e.scrollingElement;
+    } = e.target.scrollingElement;
     if (scrollTop + clientHeight + (CARD_HEIGHT*1.5) > scrollHeight) {
       setPage(page=>page+1)
     }
@@ -25,9 +26,9 @@ const InfiniteScrollList = () => {
   }
 
   useEffect(() => {
-    document.addEventListener('scroll',onScroll)
+    document.addEventListener('scroll',throttled(onScroll,300))
     return () => {
-      document.removeEventListener('scroll',onScroll)
+      document.removeEventListener('scroll',throttled(onScroll,300))
     }
   },[])
 
